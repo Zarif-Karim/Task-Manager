@@ -2,6 +2,7 @@
 const express = require('express');
 const app = express();
 const not_found = require('./middleware/not-found');
+const error_handler = require('./middleware/error-handler');
 //database connection
 const connectDB = require('./connect');
 //environment variables
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use('/api/v1/tasks', task);
 
 app.use(not_found);
+app.use(error_handler);
 
 const start_server = async (port, db_connection) => {
     try{

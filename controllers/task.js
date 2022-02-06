@@ -1,5 +1,6 @@
 const taskModel = require('../models/task');
 const async_wrapper = require('../middleware/async_wrapper');
+const { create_api_error } = require('../errors/custom_api_error');
 
 const get_all_tasks = async_wrapper ( async (req,res) => { 
     const tasks = await taskModel.find({});
@@ -11,26 +12,26 @@ const add_task = async_wrapper ( async (req,res) => {
     res.status(201).json({task}); 
 });
 
-const get_single_task = async_wrapper ( async (req,res) => { 
+const get_single_task = async_wrapper ( async (req,res,next) => { 
     const task = await taskModel.findById(req.params.id).exec();
     if(!task){
-        return res.status(404).json({ msg: `No task found with id: ${req.params.id}` });
+        return next(create_api_error(`No task found with id: ${req.params.id}`,404));
     }
     res.status(201).json({task}); 
 });
 
-const update_single_task = async_wrapper ( async (req,res) => { 
+const update_single_task = async_wrapper ( async (req,res,next) => { 
     const task = await taskModel.findByIdAndUpdate(req.params.id,req.body,{runValidators:true});
     if(!task){
-        return res.status(404).json({msg: `No task found with _id: ${req.params.id}`});
+        return next(create_api_error(`No task found with id: ${req.params.id}`,404));
     }
     res.status(201).json({msg: 'Following Task updated', task}); 
 });
 
-const delete_single_task = async_wrapper ( async (req,res) => { 
+const delete_single_task = async_wrapper ( async (req,res,next) => { 
     const task = await taskModel.findByIdAndDelete(req.params.id).exec();
     if(!task){
-        return res.status(404).json({msg: `No task found with _id: ${req.params.id}`});
+        return next(create_api_error(`No task found with id: ${req.params.id}`,404));
     }
     res.status(201).json({msg: 'Following Task deleted', task}); 
 });
