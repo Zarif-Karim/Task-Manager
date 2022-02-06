@@ -1,6 +1,7 @@
 
 const express = require('express');
 const app = express();
+const not_found = require('./middleware/not-found');
 //database connection
 const connectDB = require('./connect');
 //environment variables
@@ -17,6 +18,8 @@ app.use(express.static('./static'));
 app.use(express.json());
 
 app.use('/api/v1/tasks', task);
+
+app.use(not_found);
 
 const start_server = async (port, db_connection) => {
     try{
